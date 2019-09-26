@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="testCard" type="id" />
+    <item name="testCardLayout" type="id" />
+
+    <item name="testTimeCard" type="id" />
+    <item name="testTimeLayout" type="id" />
+
+    <item name="testTimeTableCard" type="id" />
+    <item name="testTimeTableLayout" type="id" />
+    <item name="testTimeTable_timeInfo" type="id" />
+    <item name="testTimeTable_imageButton" type="id" />
+    <item name="testTimeTable_switch" type="id" />
+    <item name="testTimeTable_divider1" type="id" />
+    <item name="testTimeTable_weekSelector" type="id" />
+    <item name="testTimeTable_weekSelectorScroll" type="id" />
+    <item name="testTimeTable_divider2" type="id" />
+    <item name="testTimeTable_tableLayout" type="id" />
+    <item name="testTimeTable_tableLayoutScroll" type="id" />
+</resources>
