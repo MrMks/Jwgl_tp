@@ -35,6 +35,12 @@ public class AboutActivity extends AppCompatActivity {
         gsonInfo.setText("Gson\nCopyright (C) 2008 Google Inc. under ALv2");
         jsoupInfo.setText("Jsoup\nCopyright (C) 2009-2019 Jonathan Hedley under GPLv3");
 
+        findViewById(R.id.about_visit_github).setOnClickListener((v)->{
+            Uri uri = Uri.parse("https://github.com/MrMks/Jwgl_tp");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        });
+
         gsonInfo.setOnClickListener((v) -> {
             Uri uri = Uri.parse("http://www.apache.org/licenses/LICENSE-2.0");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
