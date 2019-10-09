@@ -24,4 +24,6 @@
     <string name="ok">OK</string>
     <string name="action_bar_about">关于</string>
     <string name="visit_github">Visit Github</string>
+    <string name="third_party_license">第三方许可</string>
+    <string name="multi_classes">重课</string>
 </resources>

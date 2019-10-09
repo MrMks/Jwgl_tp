@@ -16,11 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.unknown.sdust.jwgl_tp.card.BaseInfoCard;
 import com.unknown.sdust.jwgl_tp.card.TimeCard;
-import com.unknown.sdust.jwgl_tp.card.TimeTableCard;
-import com.unknown.sdust.jwgl_tp.card.TimeTableCard_v2;
+import com.unknown.sdust.jwgl_tp.card.TimeTableCard_v3_lessonTable;
 import com.unknown.sdust.jwgl_tp.data.CookieData;
 import com.unknown.sdust.jwgl_tp.data.LoginData;
-import com.unknown.sdust.jwgl_tp.data.TimeTable;
+import com.unknown.sdust.jwgl_tp.data.VersionData;
+import com.unknown.sdust.jwgl_tp.data.timeTable.LessonTable;
 import com.unknown.sdust.jwgl_tp.info.TimeInfo;
 import com.unknown.sdust.jwgl_tp.utils.JsonRes;
 import com.unknown.sdust.jwgl_tp.utils.ResultPack;
@@ -28,6 +28,9 @@ import com.unknown.sdust.jwgl_tp.utils.ResultPack;
 public class MainActivity extends AppCompatActivity {
 
     private static Handler handler = new Handler(Looper.getMainLooper());
+
+    private static final long login_version = 20191009_00;
+    private static final long table_version = 20191009_00;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +45,13 @@ public class MainActivity extends AppCompatActivity {
         setTitle(R.string.title_main);
         new Thread(() -> {
             try {
+                new Updater().update(Infos.versionInfoRead.getInfo().getResult(),new VersionData(login_version,table_version));
+
                 ResultPack<LoginData> data = Infos.loginDataInfo.getInfo();
-                ResultPack<TimeTable> table = Infos.tableInfoRead.getInfo();
+                //ResultPack<TimeTable> table = Infos.tableInfoRead.getInfo();
+                ResultPack<LessonTable> table = Infos.lessonInfoRead.getInfo();
                 //ResultPack<CookieData> cookie = Infos.cookieInfoRead.getInfo();
+
                 if(data.isPresent() && !data.getResult().isEmpty() && table.isPresent()){
                     handler.post(() -> {
                         setContentView(R.layout.activity_main);
@@ -134,7 +141,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadTimeTableInfo(){
-        runCard(new TimeTableCard_v2(this,Infos.tableInfoRead));
+        //runCard(new TimeTableCard_v2(this,Infos.tableInfoRead));
+        runCard(new TimeTableCard_v3_lessonTable(this,Infos.lessonInfoRead));
     }
 
     private void runCard(ICard card){

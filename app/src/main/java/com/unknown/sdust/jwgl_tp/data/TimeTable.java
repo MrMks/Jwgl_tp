@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class TimeTable {
 
-    public ArrayList<Week> table = new ArrayList<>();
+    public ArrayList<Week> table = new ArrayList<>(25);
     public ArrayList<String> extra = new ArrayList<>();
 
     public Date firstDay;
@@ -23,7 +23,7 @@ public class TimeTable {
     }
 
     public SingleClass getSingleClass(int iWeek, int iDay, int iTime){
-        if(getWeek(iWeek) != null & getWeek(iWeek).getDay(iDay) != null){
+        if(getWeek(iWeek) != null && getWeek(iWeek).getDay(iDay) != null){
             return getWeek(iWeek).getDay(iDay).getSingle(iTime);
         } else {
             return null;
@@ -42,10 +42,12 @@ public class TimeTable {
         checkS();
         return max_week_index + 1;
     }
+
     public int getWeekSize(){
         checkS();
         return max_day_index + 1;
     }
+
     public int getDaySize(){
         checkS();
         return max_time_index + 1;
@@ -68,7 +70,7 @@ public class TimeTable {
     }
 
     public class Week{
-        public ArrayList<Day> week = new ArrayList<>();
+        public ArrayList<Day> week = new ArrayList<>(7);
         void addSingleClass(int iDay, SingleClass singleClass){
             while(week.size() < iDay) week.add(new Day());
             Day day = week.get(iDay - 1);
@@ -80,7 +82,7 @@ public class TimeTable {
     }
 
     public class Day{
-        public ArrayList<SingleClass> day = new ArrayList<>();
+        public ArrayList<SingleClass> day = new ArrayList<>(10);
         void addSingleClass(SingleClass singleClass){
             while(day.size() < singleClass.time) day.add(null);
             day.add(singleClass.time - 1,singleClass);

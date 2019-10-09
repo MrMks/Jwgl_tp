@@ -7,8 +7,6 @@ import com.unknown.sdust.jwgl_tp.utils.ResultPack;
 
 import org.jsoup.Connection;
 
-import java.io.IOException;
-
 public class CookieInfo implements IInfo<CookieData> {
     private CookieData cache;
 
@@ -23,12 +21,12 @@ public class CookieInfo implements IInfo<CookieData> {
             try {
                 Connection.Response response = NetLib.connect("http://jwgl.sdust.edu.cn/jsxsd", Connection.Method.GET);
                 data.cookie = response.cookie(data.getName());
-            } catch (IOException e) {
+                cache = data;
+            } catch (Exception e) {
                 e.printStackTrace();
                 flag = false;
                 msg = e.getLocalizedMessage();
             }
-            cache = data;
             return new ResultPack<>(flag,data,msg);
         }
     }

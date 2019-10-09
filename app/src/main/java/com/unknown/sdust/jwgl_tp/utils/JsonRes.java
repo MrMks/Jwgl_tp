@@ -11,6 +11,7 @@ public class JsonRes {
     public static String loginFile = "login.json";
     public static String tableFile = "table.json";
     public static String cookieFile = "cookie.json";
+    public static String versionFile = "version.json";
 
     private static final Gson gson = new Gson();
     private static File path;
