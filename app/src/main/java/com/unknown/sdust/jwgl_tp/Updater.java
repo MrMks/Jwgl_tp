@@ -9,6 +9,8 @@ import com.unknown.sdust.jwgl_tp.utils.ResultPack;
 public class Updater {
     public void update(VersionData last, VersionData now){
         if (last == null) {
+            updateLogin();
+            updateTable();
             JsonRes.write(now,JsonRes.versionFile);
             return;
         }
@@ -39,6 +41,7 @@ public class Updater {
             for (int day = 1; day < table.getWeekSize() + 1; day++){
                 for (int time = 1; time < table.getDaySize() + 1; time++){
                     TimeTable.SingleClass single = table.getSingleClass(week,day,time);
+                    if (single == null) continue;
                     lessons.addLesson(week,day,time,single.name,single.teacher,single.room);
                 }
             }
