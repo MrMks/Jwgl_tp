@@ -1,4 +1,4 @@
-package com.unknown.sdust.jwgl_tp;
+package com.unknown.sdust.jwgl_tp.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.unknown.sdust.jwgl_tp.R;
 
 public class AboutActivity extends AppCompatActivity {
     @Override

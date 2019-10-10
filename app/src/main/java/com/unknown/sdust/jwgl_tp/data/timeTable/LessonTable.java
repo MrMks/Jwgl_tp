@@ -1,35 +1,40 @@
 package com.unknown.sdust.jwgl_tp.data.timeTable;
 
+import com.unknown.sdust.jwgl_tp.ILesson;
+import com.unknown.sdust.jwgl_tp.ILessonTable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
-public class LessonTable {
-    private ArrayList<Week> weeks = new ArrayList<>(26);
-    private ArrayList<String> extras = new ArrayList<>(10);
+public class LessonTable implements ILessonTable {
+    private ArrayList<ILesson> lessons = new ArrayList<>(30);
+    private int weekCount = 0;
+    private ArrayList<String> extras = new ArrayList<>(4);
     private Date firstDay;
 
-    public void addLesson(ArrayList<Integer> iWeeks, int iDay, int iTime, String name, String teacher, String room) {
-        for(int i : iWeeks) addLesson(i, iDay, iTime, name, teacher, room);
-    }
-
     public void addLesson(int iWeek, int iDay, int iTime, String name, String teacher, String room){
-        while (weeks.size() < iWeek) weeks.add(new Week());
-        Week w = weeks.get(iWeek - 1);
-        w.addLesson(iWeek,iDay,iTime,name,teacher,room);
+        weekCount = Math.max(weekCount,iWeek);
+        Lesson lesson = Lesson.getOrCreate(name,teacher);
+        if (!lessons.contains(lesson)) lessons.add(lesson);
+        lesson.addRoom(iWeek,iDay,iTime,room);
     }
 
-    public Week getWeek(int iWeek) {
-        if (weeks.size() < iWeek) return null;
-        return weeks.get(iWeek - 1);
+    @Override
+    public Collection<ILesson> getLessons(int week) {
+        if (weekCount < week) return null;
+        ArrayList<ILesson> lessons = new ArrayList<>(15);
+        for (ILesson lesson : this.lessons){
+            Set<Integer> set = lesson.keySet(week);
+            if (set != null && !set.isEmpty()) lessons.add(lesson);
+        }
+        return lessons;
     }
 
-    public ArrayList<Week> getWeeks() {
-        return weeks;
-    }
-
-    public void setWeeks(ArrayList<Week> weeks) {
-        this.weeks = weeks;
+    @Override
+    public int getWeekCount() {
+        return weekCount;
     }
 
     public void addExtra(String extra) {
@@ -40,6 +45,7 @@ public class LessonTable {
         return extras;
     }
 
+    //use for GSON reflect
     public void setExtras(ArrayList<String> extras) {
         this.extras = extras;
     }
@@ -52,21 +58,4 @@ public class LessonTable {
         return firstDay;
     }
 
-    public int getSize(){
-        return weeks.size();
-    }
-
-    public class Week {
-        ArrayList<Lesson> lessons = new ArrayList<>(15);
-
-        void addLesson(int week, int day, int time, String name, String teacher, String room){
-            Lesson l = Lesson.getOrCreate(name,teacher);
-            l.addRoom(week, day, time, room);
-            if (!lessons.contains(l)) lessons.add(l);
-        }
-
-        public Collection<Lesson> asCollection(){
-            return lessons;
-        }
-    }
 }

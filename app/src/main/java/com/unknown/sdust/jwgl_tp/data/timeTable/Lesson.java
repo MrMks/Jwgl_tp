@@ -1,10 +1,15 @@
 package com.unknown.sdust.jwgl_tp.data.timeTable;
 
+import android.annotation.SuppressLint;
+
+import com.unknown.sdust.jwgl_tp.ILesson;
+
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 
-public class Lesson {
+public class Lesson implements ILesson {
 
     private static HashMap<String, Lesson> lessonHashMap = new HashMap<>();
     static Lesson getOrCreate(String n, String t){
@@ -21,6 +26,7 @@ public class Lesson {
 
     private String name;
     private String teacher;
+    @SuppressLint("UseSparseArrays")
     private HashMap<Integer, HashMap<Integer, String>> roomMap = new HashMap<>();
 
     public Lesson(){}
@@ -46,32 +52,25 @@ public class Lesson {
         this.teacher = teacher;
     }
 
+    @SuppressLint("UseSparseArrays")
+    public void addRoom(int week, int day, int time, String room){
+        if (!roomMap.containsKey(week)) roomMap.put(week,new HashMap<>());
+        Objects.requireNonNull(roomMap.get(week)).put(day << 3 | time, room);
+    }
+
     public String getRoom(int week, int day, int time){
-        return getRoom(week,day * 100 + time);
+        return getRoom(week,day << 3 | time);
     }
 
     public String getRoom(int week, int day_time){
-        if (roomMap.get(week) != null) return roomMap.get(week).get(day_time);
+        if (roomMap.get(week) != null) return Objects.requireNonNull(roomMap.get(week)).get(day_time);
         return "";
     }
 
     public Set<Integer> keySet(int week){
         if (roomMap.get(week) != null) {
-            return roomMap.get(week).keySet();
+            return Objects.requireNonNull(roomMap.get(week)).keySet();
         }
         else return Collections.emptySet();
-    }
-
-    public void addRoom(int week, int day, int time, String room){
-        if (!roomMap.containsKey(week)) roomMap.put(week,new HashMap<>());
-        roomMap.get(week).put(day * 100 + time, room);
-    }
-
-    public HashMap<Integer, HashMap<Integer, String>> getRoomMap() {
-        return roomMap;
-    }
-
-    public void setRoomMap(HashMap<Integer, HashMap<Integer, String>> roomMap) {
-        this.roomMap = roomMap;
     }
 }

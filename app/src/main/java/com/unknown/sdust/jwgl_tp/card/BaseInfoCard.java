@@ -8,9 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.unknown.sdust.jwgl_tp.CardContent;
 import com.unknown.sdust.jwgl_tp.IInfo;
-import com.unknown.sdust.jwgl_tp.Infos;
 import com.unknown.sdust.jwgl_tp.R;
 import com.unknown.sdust.jwgl_tp.data.CookieData;
+import com.unknown.sdust.jwgl_tp.info.Infos;
 import com.unknown.sdust.jwgl_tp.utils.JsonRes;
 
 public class BaseInfoCard extends CardContent<String[]> {

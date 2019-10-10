@@ -59,7 +59,7 @@ public class TimeTableInfo extends JsonInfo<TimeTable> {
     }
 
     @Override
-    Class<TimeTable> getKlass() {
+    Class<? extends TimeTable> getKlass() {
         return TimeTable.class;
     }
 

@@ -1,34 +1,20 @@
-package com.unknown.sdust.jwgl_tp;
+package com.unknown.sdust.jwgl_tp.updater;
 
+import com.unknown.sdust.jwgl_tp.AbstractUpdater;
 import com.unknown.sdust.jwgl_tp.data.TimeTable;
-import com.unknown.sdust.jwgl_tp.data.VersionData;
 import com.unknown.sdust.jwgl_tp.data.timeTable.LessonTable;
+import com.unknown.sdust.jwgl_tp.info.Infos;
 import com.unknown.sdust.jwgl_tp.utils.JsonRes;
 import com.unknown.sdust.jwgl_tp.utils.ResultPack;
 
-public class Updater {
-    public void update(VersionData last, VersionData now){
-        if (last == null) {
-            updateLogin();
-            updateTable();
-            JsonRes.write(now,JsonRes.versionFile);
-            return;
-        }
-
-        if (last.login_lastVersion != now.login_lastVersion){
-            updateLogin();
-        }
-
-        if (last.table_lastVersion != now.table_lastVersion){
-            updateTable();
-        }
-    }
-
-    protected void updateLogin(){
+public class update_0 extends AbstractUpdater {
+    @Override
+    public void updateLogin() {
 
     }
 
-    protected void updateTable(){
+    @Override
+    public void updateTable() {
         ResultPack<TimeTable> pack = Infos.tableInfoRead.getInfo();
         if (!pack.isPresent()) return;
 

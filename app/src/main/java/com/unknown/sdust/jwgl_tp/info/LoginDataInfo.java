@@ -23,7 +23,7 @@ public class LoginDataInfo extends JsonInfo<LoginData> {
     }
 
     @Override
-    Class<LoginData> getKlass() {
+    Class<? extends LoginData> getKlass() {
         return LoginData.class;
     }
 }

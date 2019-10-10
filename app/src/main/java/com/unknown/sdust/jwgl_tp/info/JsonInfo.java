@@ -25,5 +25,5 @@ public abstract class JsonInfo<K> implements IInfo<K>{
     }
 
     abstract String getChild();
-    abstract Class<K> getKlass();
+    abstract Class<? extends K> getKlass();
 }

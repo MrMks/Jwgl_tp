@@ -10,7 +10,7 @@ public class VersionInfo extends JsonInfo<VersionData>{
     }
 
     @Override
-    Class<VersionData> getKlass() {
+    Class<? extends VersionData> getKlass() {
         return VersionData.class;
     }
 }

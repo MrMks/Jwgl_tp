@@ -1,7 +1,13 @@
 package com.unknown.sdust.jwgl_tp.info;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.unknown.sdust.jwgl_tp.IInfo;
+import com.unknown.sdust.jwgl_tp.ILesson;
+import com.unknown.sdust.jwgl_tp.ILessonTable;
 import com.unknown.sdust.jwgl_tp.data.CookieData;
+import com.unknown.sdust.jwgl_tp.data.timeTable.Lesson;
 import com.unknown.sdust.jwgl_tp.data.timeTable.LessonTable;
 import com.unknown.sdust.jwgl_tp.utils.JsonRes;
 import com.unknown.sdust.jwgl_tp.utils.NetLib;
@@ -12,10 +18,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -23,18 +31,33 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LessonTableInfo extends JsonInfo<LessonTable> {
+public class LessonTableInfo implements IInfo<ILessonTable> {
     private IInfo<CookieData> info;
-    private LessonTable cache;
+    private ILessonTable cache;
     public LessonTableInfo(IInfo<CookieData> _info){
         info = _info;
     }
 
     @Override
-    public ResultPack<LessonTable> getInfo() {
+    public ResultPack<ILessonTable> getInfo() {
         if(cache != null) return new ResultPack<>(true,cache,"");
 
-        cache = super.getInfo().getResult();
+        ILessonTable result = null;
+        File file = new File(JsonRes.getPath(),getChild());
+        if(file.exists()){
+            Gson gson = new GsonBuilder().registerTypeAdapter(ILesson.class, (JsonDeserializer<Lesson>) (json, typeOfT, context) -> context.deserialize(json,Lesson.class)).create();
+            try {
+                FileReader fileReader = new FileReader(file);
+                result =  gson.fromJson(fileReader,getKlass());
+                fileReader.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        cache = result;
         if(cache != null) return new ResultPack<>(true,cache,"");
 
         try {
@@ -84,21 +107,18 @@ public class LessonTableInfo extends JsonInfo<LessonTable> {
                     if(room.startsWith("JC") || room.startsWith("JB") || room.startsWith("JA") || room.startsWith("J网")) room = room.substring(1);
                     if(room.startsWith("Js")) room = room.replaceFirst("Js","S");
 
-                    ArrayList<Integer> arrayList = new ArrayList<>();
                     Matcher matcher = Pattern.compile("(\\d{1,2})(?:-(\\d{1,2}))?").matcher(strWeek);
                     while(matcher.find()){
                         int i,j;
                         for(i = j = Integer.decode(matcher.group(1));i <= (matcher.group(2) == null ? j :Integer.decode(matcher.group(2)));i++) {
                             if (strWeek.contains("单周")) {
-                                if (i % 2 == 1) arrayList.add(i);
+                                if (i % 2 != 1) continue;
                             } else if (strWeek.contains("双周")) {
-                                if (i % 2 == 0) arrayList.add(i);
-                            } else {
-                                arrayList.add(i);
+                                if (i % 2 != 0) continue;
                             }
+                            table.addLesson(i,day,time,name,teacher,room);
                         }
                     }
-                    table.addLesson(arrayList,day,time,name,teacher,room);
                 }
             }
         }
@@ -121,13 +141,11 @@ public class LessonTableInfo extends JsonInfo<LessonTable> {
         return new SimpleDateFormat("yyyy年MM月dd", Locale.CHINA).parse(day);
     }
 
-    @Override
-    String getChild() {
+    private String getChild() {
         return JsonRes.tableFile;
     }
 
-    @Override
-    Class<LessonTable> getKlass() {
+    private Class<? extends ILessonTable> getKlass() {
         return LessonTable.class;
     }
 }

@@ -1,4 +1,4 @@
-package com.unknown.sdust.jwgl_tp;
+package com.unknown.sdust.jwgl_tp.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,6 +16,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.unknown.sdust.jwgl_tp.IInfo;
+import com.unknown.sdust.jwgl_tp.R;
+import com.unknown.sdust.jwgl_tp.info.Infos;
 import com.unknown.sdust.jwgl_tp.info.LoginActivityInfo;
 import com.unknown.sdust.jwgl_tp.info.VerifyBitmapInfo;
 import com.unknown.sdust.jwgl_tp.utils.ResultPack;

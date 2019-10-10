@@ -1,7 +1,6 @@
 package com.unknown.sdust.jwgl_tp.info;
 
 import com.unknown.sdust.jwgl_tp.IInfo;
-import com.unknown.sdust.jwgl_tp.Infos;
 import com.unknown.sdust.jwgl_tp.data.CookieData;
 import com.unknown.sdust.jwgl_tp.data.LoginData;
 import com.unknown.sdust.jwgl_tp.utils.EncodeInp;

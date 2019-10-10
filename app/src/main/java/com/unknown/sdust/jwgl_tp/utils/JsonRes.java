@@ -53,4 +53,8 @@ public class JsonRes {
             return file.delete();
         }
     }
+
+    public static File getPath() {
+        return path;
+    }
 }
