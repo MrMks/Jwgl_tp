@@ -5,6 +5,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -126,13 +127,17 @@ public class TimeTableCard_v3_lessonTable extends CardContent<ILessonTable> {
 
     private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd 星期u", Locale.CHINA);
     private void setWeekTable(int select){
+        LinearLayout linearLayout = findViewById(R.id.week_linear);
         TableLayout tableLayout = findViewById(R.id.table);
+        getHandler().post(linearLayout::removeAllViews);
         getHandler().post(tableLayout::removeAllViews);
 
         TableRow[] rows = new TableRow[6];
+        View extra;
         HashSet<TextView> views = new HashSet<>();
         int w_max = 0;
         int h_max = 0;
+        //时间栏
         {
             Date first = table.getFirstDay();
             Calendar calendar = Calendar.getInstance(Locale.CHINA);
@@ -153,7 +158,7 @@ public class TimeTableCard_v3_lessonTable extends CardContent<ILessonTable> {
             //getHandler().post(()->tableLayout.addView(row));
             rows[0] = row;
         }
-
+        //课程表
         {
             Collection<ILesson> lessons = table.getLessons(select);
             for(int i = 1;i < 6;i++) {
@@ -169,9 +174,10 @@ public class TimeTableCard_v3_lessonTable extends CardContent<ILessonTable> {
                     TableRow row = rows[time];
                     while (row.getChildCount() < day) {
                         TextView v = new TextView(getContext());
-                        views.add(v);
+                        if (row.getChildCount() == 0) views.add(v);
                         row.addView(v);
                     }
+
                     TextView view = (TextView) row.getChildAt(day - 1);
 
                     String title,msg;
@@ -207,6 +213,23 @@ public class TimeTableCard_v3_lessonTable extends CardContent<ILessonTable> {
                 }
             }
         }
+        // 备注栏
+        {
+            TextView text = new TextView(getContext());
+            text.setText("");
+            for (String ext : table.getExtras()){
+                text.append(ext);
+                text.append("\n");
+            }
+            text.setPadding(dp2px(4),dp2px(4),dp2px(4),dp2px(4));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.leftMargin = dp2px(8);
+            params.rightMargin = dp2px(8);
+            params.bottomMargin = dp2px(8);
+            text.setLayoutParams(params);
+            extra = text;
+        }
+
         for (TableRow row:rows){
             if(row.getChildCount() == 0){
                 TextView v = new TextView(getContext());
@@ -219,6 +242,11 @@ public class TimeTableCard_v3_lessonTable extends CardContent<ILessonTable> {
             view.setHeight(h_max);
             view.setWidth(w_max);
         }
+        getHandler().post(()->{
+            linearLayout.addView(tableLayout);
+            linearLayout.addView(extra);
+        });
+
     }
     private void setClickListeners() {
         getHandler().post(() -> {
