@@ -1,10 +1,10 @@
 package com.unknown.sdust.jwgl_tp.card;
 
+import android.app.Activity;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.unknown.sdust.jwgl_tp.CardContent;
 import com.unknown.sdust.jwgl_tp.IInfo;
@@ -16,7 +16,7 @@ import com.unknown.sdust.jwgl_tp.utils.JsonRes;
 public class BaseInfoCard extends CardContent<String[]> {
     private AlertDialog logout_alertDialog;
 
-    public BaseInfoCard(AppCompatActivity activity, IInfo<String[]> info){
+    public BaseInfoCard(Activity activity, IInfo<String[]> info){
         super(activity,info);
     }
 

@@ -1,27 +1,29 @@
 package com.unknown.sdust.jwgl_tp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.unknown.sdust.jwgl_tp.utils.ResultPack;
 
 public abstract class CardContent<K> implements ICard<K> {
-    private AppCompatActivity activity;
+    private Activity activity;
     private Handler handler;
     private IInfo<K> info;
 
-    public CardContent(AppCompatActivity activity, IInfo<K> _info){
+    public CardContent(Activity activity,Handler mHandler, IInfo<K> _info){
         this.activity = activity;
-        this.handler = new Handler(Looper.getMainLooper());
+        this.handler = mHandler;
         setInfo(_info);
+    }
+
+    public CardContent(Activity activity, IInfo<? extends K> info) {
     }
 
     @Override
@@ -33,7 +35,7 @@ public abstract class CardContent<K> implements ICard<K> {
         return this.info.getInfo();
     }
 
-    protected AppCompatActivity getContext(){
+    protected Activity getContext(){
         return activity;
     }
     protected Handler getHandler(){
@@ -78,5 +80,9 @@ public abstract class CardContent<K> implements ICard<K> {
 
     protected int dp2px(int dp){
         return Math.round(getContext().getResources().getDisplayMetrics().density * dp + 0.5f);
+    }
+
+    protected void runOnUiThread(Runnable runnable){
+        activity.runOnUiThread(runnable);
     }
 }

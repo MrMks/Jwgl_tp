@@ -1,5 +1,6 @@
 package com.unknown.sdust.jwgl_tp.card;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.util.SparseArray;
 import android.view.View;
@@ -9,8 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.unknown.sdust.jwgl_tp.CardContent;
 import com.unknown.sdust.jwgl_tp.IInfo;
@@ -28,7 +27,7 @@ import java.util.HashSet;
 import java.util.Locale;
 
 public class TimeTableCard_v3_lessonTable extends CardContent<ILessonTable> {
-    public TimeTableCard_v3_lessonTable(AppCompatActivity activity, IInfo<ILessonTable> info) {
+    public TimeTableCard_v3_lessonTable(Activity activity, IInfo<ILessonTable> info) {
         super(activity,info);
         init();
     }

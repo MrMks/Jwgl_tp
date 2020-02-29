@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginActivityInfo implements IInfo {
+public class LoginActivityInfo implements IInfo<String> {
     private String encoded, code;
     private String account, password;
     private boolean rem_pass;
@@ -33,7 +33,7 @@ public class LoginActivityInfo implements IInfo {
     }
 
     @Override
-    public ResultPack getInfo() {
+    public ResultPack<String> getInfo() {
         Map<String,String> data = new HashMap<>();
         data.put("encoded",encoded);
         data.put("RANDOMCODE",code);

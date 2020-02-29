@@ -1,15 +1,14 @@
 package com.unknown.sdust.jwgl_tp.card;
 
+import android.app.Activity;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.unknown.sdust.jwgl_tp.CardContent;
 import com.unknown.sdust.jwgl_tp.IInfo;
 import com.unknown.sdust.jwgl_tp.R;
 
 public class TimeCard extends CardContent<String> {
-    public TimeCard(AppCompatActivity activity, IInfo<String> info){
+    public TimeCard(Activity activity, IInfo<String> info){
         super(activity,info);
     }
 
