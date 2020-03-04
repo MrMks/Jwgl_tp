@@ -13,7 +13,7 @@ public class EncodeInp {
             enc1 = chr1 >> 2;
             enc2 = (((chr1 == -1 ? 0 : chr1) & 3) << 4) | ((chr2 == -1 ? 0 : chr2) >> 4);
             enc3 = (((chr2 == -1 ? 0 : chr2) & 15) << 2) | ((chr3 == -1 ? 0 : chr3) >> 6);
-            enc4 = (chr3 < 0 ? 0 : chr3) & 63;
+            enc4 = (Math.max(chr3, 0)) & 63;
             if (chr2 == -1) {
                 enc3 = enc4 = 64;
             } else if (chr3 == -1) {

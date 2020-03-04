@@ -9,10 +9,10 @@
     app:cardCornerRadius="4dp">
 
     <TextView
+        android:id="@+id/f_main_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/main_require_login" />
+        android:layout_marginBottom="8dp" />
 </androidx.cardview.widget.CardView>

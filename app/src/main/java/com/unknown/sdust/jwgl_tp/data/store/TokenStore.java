@@ -1,31 +1,30 @@
 package com.unknown.sdust.jwgl_tp.data.store;
 
-public class TokenStore implements IFileStore<TokenStore>{
+import com.google.gson.annotations.Expose;
+import com.unknown.sdust.jwgl_tp.data.IFileStore;
+import com.unknown.sdust.jwgl_tp.data.ISelfCheck;
+
+public class TokenStore implements IFileStore<TokenStore>, ISelfCheck {
 
     public static final String NAME = "JSESSIONID";
-    private String token = "";
+    @Expose private String token = "";
+
+    public TokenStore(){}
+    public TokenStore(String tk){
+        this.token = tk;
+    }
 
     public String getToken(){
         return token;
     }
 
-    public boolean isTokenAccessible(){
-        return !(token == null) && !token.isEmpty() && isTokenInTime();
-    }
-
-    /*
-    this method will access internet so this will be a time costing method
-    please call this method in work thread
-     */
-    private boolean isTokenInTime(){
-        return false;
-    }
-
-    @Override
-    public void fromFile(TokenStore file) {}
-
     @Override
     public TokenStore toFile() {
         return this;
+    }
+
+    @Override
+    public boolean selfCheck() {
+        return token != null && !token.isEmpty();
     }
 }

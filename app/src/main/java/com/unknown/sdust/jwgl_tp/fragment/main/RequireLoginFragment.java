@@ -27,7 +27,7 @@ public class RequireLoginFragment extends Fragment {
         super.onStart();
         Objects.requireNonNull(getView()).setOnClickListener(v->{
             Intent intent = new Intent(getActivity(), LoginActivity.class);
-            startActivityForResult(intent,0);
+            Objects.requireNonNull(getActivity()).startActivityForResult(intent,0);
         });
     }
 }

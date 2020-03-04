@@ -42,7 +42,7 @@ public class NetLib {
         return connect(url, method, emptyMap);
     }
 
-    public static Connection.Response connect(String url, Connection.Method method, Map<String,String> _header) throws IOException {
+    private static Connection.Response connect(String url, Connection.Method method, Map<String, String> _header) throws IOException {
         return connect(url, method, _header, emptyMap);
     }
 

@@ -17,7 +17,7 @@ public class AboutActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(R.string.action_bar_about);
+        setTitle(R.string.title_about);
         setContentView(R.layout.activity_about);
         TextView textView = findViewById(R.id.about_this_soft);
         Button gsonInfo = findViewById(R.id.gson_license);
@@ -60,6 +60,5 @@ public class AboutActivity extends AppCompatActivity {
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         });
-
     }
 }

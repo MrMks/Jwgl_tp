@@ -9,24 +9,28 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.unknown.sdust.jwgl_tp.ICard;
 import com.unknown.sdust.jwgl_tp.R;
-import com.unknown.sdust.jwgl_tp.card.BaseInfoCard;
-import com.unknown.sdust.jwgl_tp.card.TimeCard;
-import com.unknown.sdust.jwgl_tp.card.TimeTableCard_v3_lessonTable;
 import com.unknown.sdust.jwgl_tp.data.DataManager;
 import com.unknown.sdust.jwgl_tp.fragment.LoadingFragment;
+import com.unknown.sdust.jwgl_tp.fragment.OfflineFragment;
+import com.unknown.sdust.jwgl_tp.fragment.main.BaseInfoFragment;
+import com.unknown.sdust.jwgl_tp.fragment.main.RefreshFragment;
 import com.unknown.sdust.jwgl_tp.fragment.main.RequireLoginFragment;
-import com.unknown.sdust.jwgl_tp.info.Infos;
-import com.unknown.sdust.jwgl_tp.info.TimeInfo;
+import com.unknown.sdust.jwgl_tp.fragment.main.TableInfoFragment;
+import com.unknown.sdust.jwgl_tp.fragment.main.TimeInfoFragment;
 
+import static com.unknown.sdust.jwgl_tp.Constant.F_TAG_LOADING;
+import static com.unknown.sdust.jwgl_tp.Constant.F_TAG_OFFLINE;
+import static com.unknown.sdust.jwgl_tp.Constant.F_TAG_REQUIRE_LOGIN;
 import static com.unknown.sdust.jwgl_tp.Constant.TAG;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         setTitle(R.string.title_main);
 
         manager = DataManager.getInstance(getFilesDir());
@@ -58,16 +63,30 @@ public class MainActivity extends AppCompatActivity {
         thread.quitSafely();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
     private void createMainActivity(){
         try {
-            if(isTokenAccessible()){
-                setupMainLayout();
+            if (isWebsiteAccessible()){
+                if (isTokenAccessible()){
+                    setupMainLayout();
+                } else {
+                    if (isTableAccessible()){
+                        setupMainLayout();
+                        addRefreshButton(R.string.main_refresh_cache);
+                    } else {
+                        goRequestLoginFragment();
+                    }
+                }
             } else {
                 if (isTableAccessible()){
                     setupMainLayout();
-                    addRefreshButton();
+                    addRefreshButton(R.string.main_refresh_offline);
                 } else {
-                    setupRequestLoginLayout();
+                    goOfflineFragment();
                 }
             }
         } catch (Exception e) {
@@ -80,71 +99,100 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isWebsiteAccessible(){
+        return manager.isWebsiteAccessible();
+    }
+
     private boolean isTokenAccessible(){
-        //return manager.getToken() != null && manager.getToken().isTokenAccessible();
-        return false;
+        return manager.getToken() != null && manager.testToken();
     }
 
     private boolean isTableAccessible(){
-        return false;
+        return manager.getTable() != null;
     }
 
     private void setupMainLayout(){
+        FragmentManager f_manager = getSupportFragmentManager();
+        FragmentTransaction transaction = f_manager.beginTransaction();
 
+        Fragment loading = f_manager.findFragmentByTag(F_TAG_LOADING);
+        if (loading != null) transaction.remove(loading);
+        Fragment require_login = f_manager.findFragmentByTag(F_TAG_REQUIRE_LOGIN);
+        if (require_login != null) transaction.remove(require_login);
+
+        transaction.replace(R.id.a_main_content,new BaseInfoFragment(mHandler))
+                .add(R.id.a_main_content,new TimeInfoFragment())
+                .add(R.id.a_main_content, new TableInfoFragment(mHandler))
+                .commit();
     }
 
-    private void addRefreshButton(){
+    private void addRefreshButton(@StringRes int strId){
 
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.a_main_content,new RefreshFragment(strId))
+                .commit();
     }
 
-    private void setupRequestLoginLayout(){
-        runOnUiThread(()->{
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.a_main_content,new RequireLoginFragment());
-            transaction.commit();
-        });
+    private void goOfflineFragment(){
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.a_main_content,new OfflineFragment(),F_TAG_OFFLINE)
+                .commit();
     }
 
-    public void runLoginActivity(View view){
-        /*
-        ResultPack<LoginData> dataPack = Infos.loginDataInfo.getInfo();
-        ResultPack<CookieData> cookiePack = Infos.cookieInfoRead.getInfo();
-        if(!cookiePack.isPresent()){
-            new AlertDialog.Builder(this)
-                    .setTitle("Error")
-                    .setMessage(cookiePack.getMsg())
-                    .setPositiveButton(R.string.yes,(a,b)->{})
-                    .show();
-            return;
+    private void goRequestLoginFragment(){
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.a_main_content,new RequireLoginFragment(),F_TAG_REQUIRE_LOGIN)
+                .commit();
+    }
+
+    private void clearAllFragment(){
+        FragmentManager f_manager = getSupportFragmentManager();
+        FragmentTransaction transaction = f_manager.beginTransaction();
+        String[] tags = new String[]{F_TAG_LOADING,F_TAG_REQUIRE_LOGIN};
+        for (String tag : tags){
+            Fragment f = f_manager.findFragmentByTag(tag);
+            if (f != null) transaction.remove(f);
         }
-        LoginData data = dataPack.getResultOrDefault(new LoginData());
-        CookieData cookie = cookiePack.getResult();
-         */
-        Intent intent = new Intent(this,LoginActivity.class);
-        /*
-        intent.putExtra("cookie",cookie.cookie);
-        intent.putExtra("account",data.Account);
-        intent.putExtra("rem_pass",data.savePassword);
-        intent.putExtra("password",data.Password);
-
-         */
-        startActivityForResult(intent,0);
+        transaction.commit();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_action_bar,menu);
+        inflater.inflate(R.menu.main_without_login,menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_bar_about) {
-            Intent intent = new Intent(this, AboutActivity.class);
-            startActivity(intent);
+        switch (item.getItemId()){
+            case R.id.main_menu_about:
+                Intent intent = new Intent(this,AboutActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.main_menu_logout:
+                mHandler.post(()->DataManager.getInstance().logout());
+                mHandler.post(this::goRequestLoginFragment);
+                return true;
+            case R.id.main_menu_reload:
+                FragmentManager f_manager = getSupportFragmentManager();
+                f_manager.beginTransaction().replace(R.id.a_main_content,new LoadingFragment()).commit();
+                mHandler.post(()->{
+                    if (isWebsiteAccessible()){
+                        if (isTokenAccessible()){
+                            manager.reload();
+                            createMainActivity();
+                        } else {
+                            getSupportFragmentManager().beginTransaction().replace(R.id.a_main_content,new RequireLoginFragment(),F_TAG_REQUIRE_LOGIN).commit();
+                        }
+                    } else {
+                        //f_manager.popBackStack();
+                        createMainActivity();
+                    }
+                });
+            default:
+                return false;
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -152,31 +200,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         setTitle(R.string.title_main);
         if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
-            setContentView(R.layout.activity_main);
-            loadMainActivity();
+            mHandler.post(this::createMainActivity);
         }
-    }
-
-    private void loadMainActivity(){
-        loadBaseInfo();
-        loadTimeInfo();
-        loadTimeTableInfo();
-    }
-
-    private void loadBaseInfo(){
-        ICard card = new BaseInfoCard(this,Infos.baseInfoRead);
-        runCard(card);
-    }
-
-    private void loadTimeInfo(){
-        runCard(new TimeCard(this,new TimeInfo()));
-    }
-
-    private void loadTimeTableInfo(){
-        runCard(new TimeTableCard_v3_lessonTable(this,Infos.lessonInfoRead));
-    }
-
-    private void runCard(ICard card){
-        new Thread(card).start();
     }
 }

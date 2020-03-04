@@ -116,6 +116,7 @@ public class LoginFragment extends Fragment {
                 toast(R.string.cant_empty_code).run();
             } else {
                 AccountStore store = new AccountStore(acc,pass,rem_pass);
+                store.setFromLocal(false);
                 FragmentTransaction transaction = Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.a_login_content,new LoadingFragment());
                 transaction.addToBackStack("signing in");
@@ -125,6 +126,11 @@ public class LoginFragment extends Fragment {
                     boolean flag = DataManager.getInstance().login(store,code);
                     if (!flag) {
                         getActivity().runOnUiThread(()-> getActivity().getSupportFragmentManager().popBackStack());
+                    } else {
+                        getActivity().runOnUiThread(()->{
+                            getActivity().setResult(Activity.RESULT_OK);
+                            getActivity().finish();
+                        });
                     }
                 });
             }

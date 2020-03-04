@@ -19,7 +19,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        setTitle(R.string.title_main);
+        setTitle(R.string.title_login);
 
         thread.start();
         Handler mHandler = new Handler(thread.getLooper());
