@@ -33,8 +33,6 @@ public class DataManager {
         qz = new QzConnectImpl();
     }
 
-    private boolean tokenValid = false;
-
     /**
      * Token came from net or saved file
      * read in files first, then try from net if token still null
@@ -46,20 +44,11 @@ public class DataManager {
             try {
                 token = local.getToken();
             } catch (FileNotFoundException e){
-                Log.i(TAG,"Token file doesn't exist, getting new token");
+                Log.i(TAG,"Token file doesn't exist");
             }
         }
-        if (token == null || !token.selfCheck()){
-            token = qz.getToken();
-            if (token != null && token.selfCheck()){
-                try {
-                    local.saveToken(token);
-                } catch (IOException e) {
-                    Log.w(TAG,e.getMessage(),e);
-                }
-            }
-        }
-        return token;
+        if (token != null && token.selfCheck()) return token;
+        else return null;
     }
 
     /**
@@ -68,14 +57,8 @@ public class DataManager {
      */
     private AccountStore account;
     public AccountStore getAccount() {
-        if (account == null){
-            try {
-                account = local.getAccount();
-            } catch (FileNotFoundException e){
-                Log.i(TAG,"Account file doesn't exist, wait for login");
-            }
-        }
-        return account;
+        if (account != null && account.selfCheck()) return account;
+        else return null;
     }
 
     /**
@@ -88,30 +71,20 @@ public class DataManager {
         return getTable(null);
     }
 
-    //TODO add menu to support option and add menu to support week;
+    //TODO add menu to support option;
     @SuppressWarnings("WeakerAccess")
     public TableStore getTable(String option) {
-        if (table == null){
-            try {
-                table = local.getTable();
-            } catch (FileNotFoundException e){
-                Log.i(TAG,"Table file doesn't exist, getting via internet");
-            }
+        boolean flag = option == null || option.isEmpty();
+        if (flag) {
+            if (table != null && table.selfCheck()) return table;
+            else return null;
+        } else {
+            if (testToken()) {
+                TableStore tb = qz.getTable(token,option);
+                if (tb != null && tb.selfCheck()) return tb;
+                else return null;
+            } else return null;
         }
-        if (tokenValid && table == null){
-            table = qz.getTable(token,null);
-            if (table != null && table.selfCheck()){
-                try {
-                    local.saveTable(table);
-                } catch (IOException e){
-                    Log.w(TAG,e);
-                }
-            }
-        }
-        if (option != null && !option.isEmpty()){
-            return qz.getTable(token,option);
-        }
-        return table;
     }
 
     /**
@@ -119,24 +92,8 @@ public class DataManager {
      */
     private CalendarStore calendar;
     public CalendarStore getCalendar() {
-        if (calendar == null){
-            try {
-                calendar = local.getCalendar();
-            } catch (FileNotFoundException e){
-                Log.i(TAG, "Calender file doesn't exist, getting via internet");
-            }
-        }
-        if (calendar == null || !calendar.selfCheck()){
-            calendar = qz.getCalendar(token);
-            if (calendar != null && calendar.selfCheck()){
-                try {
-                    local.saveCalendar(calendar);
-                } catch (IOException e) {
-                    Log.w(TAG,e.getMessage(),e);
-                }
-            }
-        }
-        return calendar;
+        if (calendar != null && calendar.selfCheck()) return calendar;
+        else return null;
     }
 
     public boolean isWebsiteAccessible(){
@@ -148,7 +105,9 @@ public class DataManager {
         if (flag) {
             this.account = account;
             account.setName(qz.getAccountName(token));
+            token.CheckIn();
             try {
+                local.saveToken(token);
                 local.saveAccount(account);
             } catch (IOException e) {
                 Log.w(TAG,e.getMessage(),e);
@@ -176,20 +135,58 @@ public class DataManager {
     }
 
     public boolean testToken(){
-        tokenValid = token != null && qz.testToken(token);
-        return tokenValid;
+        if (token == null) return false;
+        if (!token.isCheckIn()) return false;
+        else {
+            if (token.isCheckOut()) return false;
+            else {
+                boolean tokenValid = qz.testToken(token);
+                if (!tokenValid) {
+                    token.CheckOut();
+                    try {local.saveToken(token);} catch (IOException e){Log.w(TAG,e);}
+                }
+                return tokenValid;
+            }
+        }
     }
 
-    public void reload() {
+    public boolean isLocalAvailable(){
+        return account != null && account.selfCheck()
+                && table != null && table.selfCheck()
+                && calendar != null && calendar.selfCheck();
+    }
+
+    public void loadNew() {
         if (account == null) account = qz.getAccount(token); else account.setName(qz.getAccountName(token));
         calendar = qz.getCalendar(token);
         table = qz.getTable(token,null);
+        try {local.saveAccount(account);} catch (IOException e) {Log.w(TAG,e);}
+        try {local.saveCalendar(calendar);} catch (IOException e) {Log.w(TAG,e);}
+        try {local.saveTable(table);} catch (IOException e) {Log.w(TAG,e);}
+    }
+
+    public void loadLocal(){
         try {
-            local.saveAccount(account);
-            local.saveCalendar(calendar);
-            local.saveTable(table);
-        } catch (IOException e){
+            account = local.getAccount();
+            calendar = local.getCalendar();
+            table = local.getTable();
+        } catch (FileNotFoundException e) {
             Log.w(TAG,e);
         }
+    }
+
+    public void getNewToken(){
+        if (isWebsiteAccessible()) token = qz.getToken();
+        try {
+            local.saveToken(token);
+        } catch (IOException e) {
+            Log.w(TAG,e);
+        }
+    }
+
+    public void deleteLocals(){
+        local.deleteTable();
+        local.deleteAccount();
+        local.deleteCalendar();
     }
 }

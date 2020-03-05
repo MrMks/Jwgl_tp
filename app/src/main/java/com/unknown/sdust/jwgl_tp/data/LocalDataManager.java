@@ -47,6 +47,7 @@ class LocalDataManager {
     }
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void deleteToken(){
+        token = null;
         new File(dir,FILE_TOKEN).delete();
     }
 
@@ -62,6 +63,7 @@ class LocalDataManager {
     }
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void deleteTable(){
+        token = null;
         new File(dir,FILE_TABLE).delete();
     }
 
@@ -75,8 +77,9 @@ class LocalDataManager {
         if (store != null) account = store;
         saveToLocal(account,FILE_ACCOUNT);
     }
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     void deleteAccount(){
-        //noinspection ResultOfMethodCallIgnored
+        token = null;
         new File(dir,FILE_ACCOUNT).delete();
     }
 
@@ -92,6 +95,7 @@ class LocalDataManager {
     }
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void deleteCalendar(){
+        token = null;
         new File(dir,FILE_CALENDAR).delete();
     }
 

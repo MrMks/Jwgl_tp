@@ -4,11 +4,14 @@ import android.app.AlertDialog;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -42,6 +45,11 @@ public class TableInfoFragment extends Fragment {
     HorizontalScrollView scrollView;
 
     private final Handler mHandler;
+    private DataManager manager = DataManager.getInstance();
+    private TableStore table = manager.getTable();
+    private CalendarStore calendar = manager.getCalendar();
+
+    private int week_now;
 
     public TableInfoFragment(Handler mHandler){
         this.mHandler = mHandler;
@@ -67,18 +75,35 @@ public class TableInfoFragment extends Fragment {
     public void onStart() {
         super.onStart();
         button.setOnClickListener(this::showTable);
+        titleText.setOnClickListener(v->{
+            PopupMenu menu = new PopupMenu(Objects.requireNonNull(getContext()),v);
+            for (int i = 0;i < table.getWeekSize(); i++) menu.getMenu().add(Menu.NONE,i,i,""+(i + 1));
+            menu.setOnMenuItemClickListener((item)->{
+                if (item.getItemId() + 1 != week_now){
+                    tableLayout.removeViewAt(0);
+                    tableLayout.removeViewAt(tableLayout.getChildCount() - 1);
+                    for (int i = 0; i < tableLayout.getChildCount(); i++) ((ViewGroup) tableLayout.getChildAt(i)).removeAllViews();
+                    createView(item.getItemId() + 1);
+                    week_now = item.getItemId() + 1;
+                }
+                return true;
+            });
+            menu.show();
+        });
     }
 
     private void createView(){
-        DataManager manager = DataManager.getInstance();
-        TableStore table = manager.getTable();
-        CalendarStore calendar = manager.getCalendar();
+        if (calendar == null) return;
+        createView(calendar.getWeekIndex());
+        week_now = calendar.getWeekIndex();
+    }
 
-        if (table == null || calendar == null) return;
-        int week = calendar.getWeekIndex();
+    private void createView(int week){
+        if (table == null) return;
+
         List<TableStore.LessonDetail> details = table.getLessons(week);
         Objects.requireNonNull(getActivity()).runOnUiThread(()->{
-            ArrayList<TextView> views = new ArrayList<>(10);
+            //ArrayList<TextView> views = new ArrayList<>(10);
             ArrayList<Integer> indexes = new ArrayList<>(10);
             for (int index = 0; index < 5; index++) indexes.add(index);
 
@@ -103,22 +128,28 @@ public class TableInfoFragment extends Fragment {
                 item.setLayoutParams(createParams(dp4,dp4,dp4,dp4));
                 item.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                 if (indexes.contains(d.getDaytime() % 10 - 1)) {
-                    indexes.remove(d.getDaytime() % 10 - 1);
-                    views.add(item);
+                    indexes.remove(Integer.valueOf(d.getDaytime() % 10 - 1));
                 }
                 w_max = Math.max(item.getMeasuredWidth(),w_max);
                 h_max = Math.max(item.getMeasuredHeight(),h_max);
             }
             for (Integer index : indexes) {
                 TextView t = new TextView(getContext());
+                t.setHeight(h_max);
                 ViewGroup g = (ViewGroup) tableLayout.getChildAt(index);
                 g.addView(t,createParams(dp4,dp4,dp4,dp4));
-                views.add(t);
             }
-            for (TextView view : views){
-                view.setWidth(w_max);
-                view.setHeight(h_max);
+            TableRow row = new TableRow(getContext());
+            for (int i = 0;i < 7;i++) {
+                TextView t = new TextView(getContext());
+                t.setPadding(dp4,dp4,dp4,dp4);
+                t.setGravity(Gravity.CENTER);
+                t.setText(String.valueOf(i + 1));
+                t.setWidth(w_max);
+                t.setHeight(h_max);
+                row.addView(t);
             }
+            tableLayout.addView(row,0);
             TextView bz = new TextView(getContext());
             bz.setText(table.getExtra());
             bz.setBackgroundColor(0xaaaaaa);

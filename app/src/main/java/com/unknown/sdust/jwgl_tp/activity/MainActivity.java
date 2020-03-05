@@ -72,17 +72,21 @@ public class MainActivity extends AppCompatActivity {
         try {
             if (isWebsiteAccessible()){
                 if (isTokenAccessible()){
+                    loadNew();
                     setupMainLayout();
                 } else {
-                    if (isTableAccessible()){
+                    loadLocal();
+                    if (isLocalAvailable()){
                         setupMainLayout();
                         addRefreshButton(R.string.main_refresh_cache);
                     } else {
+                        getNewToken();
                         goRequestLoginFragment();
                     }
                 }
             } else {
-                if (isTableAccessible()){
+                loadLocal();
+                if (isLocalAvailable()){
                     setupMainLayout();
                     addRefreshButton(R.string.main_refresh_offline);
                 } else {
@@ -107,8 +111,20 @@ public class MainActivity extends AppCompatActivity {
         return manager.getToken() != null && manager.testToken();
     }
 
-    private boolean isTableAccessible(){
-        return manager.getTable() != null;
+    private boolean isLocalAvailable(){
+        return manager.isLocalAvailable();
+    }
+
+    private void loadNew(){
+        manager.loadNew();
+    }
+
+    private void loadLocal(){
+        manager.loadLocal();
+    }
+
+    private void getNewToken(){
+        manager.getNewToken();
     }
 
     private void setupMainLayout(){
@@ -127,9 +143,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addRefreshButton(@StringRes int strId){
-
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.a_main_content,new RefreshFragment(strId))
+                .add(R.id.a_main_content,new RefreshFragment(strId,this::reload))
                 .commit();
     }
 
@@ -143,17 +158,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.a_main_content,new RequireLoginFragment(),F_TAG_REQUIRE_LOGIN)
                 .commit();
-    }
-
-    private void clearAllFragment(){
-        FragmentManager f_manager = getSupportFragmentManager();
-        FragmentTransaction transaction = f_manager.beginTransaction();
-        String[] tags = new String[]{F_TAG_LOADING,F_TAG_REQUIRE_LOGIN};
-        for (String tag : tags){
-            Fragment f = f_manager.findFragmentByTag(tag);
-            if (f != null) transaction.remove(f);
-        }
-        transaction.commit();
     }
 
     @Override
@@ -175,32 +179,42 @@ public class MainActivity extends AppCompatActivity {
                 mHandler.post(this::goRequestLoginFragment);
                 return true;
             case R.id.main_menu_reload:
-                FragmentManager f_manager = getSupportFragmentManager();
-                f_manager.beginTransaction().replace(R.id.a_main_content,new LoadingFragment()).commit();
-                mHandler.post(()->{
-                    if (isWebsiteAccessible()){
-                        if (isTokenAccessible()){
-                            manager.reload();
-                            createMainActivity();
-                        } else {
-                            getSupportFragmentManager().beginTransaction().replace(R.id.a_main_content,new RequireLoginFragment(),F_TAG_REQUIRE_LOGIN).commit();
-                        }
-                    } else {
-                        //f_manager.popBackStack();
-                        createMainActivity();
-                    }
-                });
+                reload();
+                return true;
             default:
                 return false;
         }
+    }
+
+    private void reload(){
+        FragmentManager f_manager = getSupportFragmentManager();
+        f_manager.beginTransaction().replace(R.id.a_main_content,new LoadingFragment()).commit();
+        mHandler.post(()->{
+            if (isWebsiteAccessible()){
+                if (isTokenAccessible()){
+                    manager.loadNew();
+                    createMainActivity();
+                } else {
+                    manager.getNewToken();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.a_main_content,new RequireLoginFragment(),F_TAG_REQUIRE_LOGIN).commit();
+                }
+            } else {
+                //f_manager.popBackStack();
+                createMainActivity();
+            }
+        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         setTitle(R.string.title_main);
+        getSupportFragmentManager().beginTransaction().replace(R.id.a_main_content,new LoadingFragment()).commit();
         if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
-            mHandler.post(this::createMainActivity);
+            mHandler.post(()->{
+                manager.loadNew();
+                setupMainLayout();
+            });
         }
     }
 }

@@ -8,6 +8,8 @@ public class TokenStore implements IFileStore<TokenStore>, ISelfCheck {
 
     public static final String NAME = "JSESSIONID";
     @Expose private String token = "";
+    @Expose private boolean checkOut = false;
+    @Expose private boolean checkIn = false;
 
     public TokenStore(){}
     public TokenStore(String tk){
@@ -16,6 +18,22 @@ public class TokenStore implements IFileStore<TokenStore>, ISelfCheck {
 
     public String getToken(){
         return token;
+    }
+
+    public void CheckIn(){
+        checkIn = true;
+    }
+
+    public void CheckOut(){
+        checkOut = true;
+    }
+
+    public boolean isCheckIn() {
+        return checkIn;
+    }
+
+    public boolean isCheckOut() {
+        return checkOut;
     }
 
     @Override

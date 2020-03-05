@@ -10,8 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.unknown.sdust.jwgl_tp.Constant;
 import com.unknown.sdust.jwgl_tp.R;
 import com.unknown.sdust.jwgl_tp.activity.LoginActivity;
+import com.unknown.sdust.jwgl_tp.data.DataManager;
+import com.unknown.sdust.jwgl_tp.data.store.AccountStore;
 
 import java.util.Objects;
 
@@ -27,6 +30,12 @@ public class RequireLoginFragment extends Fragment {
         super.onStart();
         Objects.requireNonNull(getView()).setOnClickListener(v->{
             Intent intent = new Intent(getActivity(), LoginActivity.class);
+            AccountStore store = DataManager.getInstance().getAccount();
+            if (store != null){
+                intent.putExtra(Constant.KEY_ACCOUNT,store.getAccount());
+                intent.putExtra(Constant.KEY_PASSWORD,store.getPassword());
+                intent.putExtra(Constant.KEY_REMEMBER_PASSWORD,store.isSaved());
+            }
             Objects.requireNonNull(getActivity()).startActivityForResult(intent,0);
         });
     }

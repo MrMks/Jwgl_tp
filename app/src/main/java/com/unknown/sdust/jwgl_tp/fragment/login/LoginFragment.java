@@ -97,6 +97,8 @@ public class LoginFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        mHandler.post(this::loadCodeImg);
+
         imageButton.setOnClickListener(v->{
             v.setClickable(false);
             mHandler.post(this::loadCodeImg);

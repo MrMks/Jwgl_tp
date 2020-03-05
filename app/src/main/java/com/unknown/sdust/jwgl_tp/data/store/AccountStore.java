@@ -45,6 +45,10 @@ public class AccountStore implements IFileStore<AccountStore>, ISelfCheck {
         return name == null ? "" : name;
     }
 
+    public String getPassword() {
+        return password == null ? "" : password;
+    }
+
     public void setFromLocal(boolean f){
         this.fromLocal = f;
     }
