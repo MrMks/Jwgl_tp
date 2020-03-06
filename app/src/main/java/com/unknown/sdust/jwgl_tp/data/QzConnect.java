@@ -15,11 +15,11 @@ public interface QzConnect {
     boolean login(TokenStore token, AccountStore account, String code);
     boolean logout(TokenStore token);
 
-    String getAccountName(TokenStore token);
-    AccountStore getAccount(TokenStore token);
     TokenStore getToken();
+    AccountStore getAccount(TokenStore token);
+    String getAccountName(TokenStore token);
     CalendarStore getCalendar(TokenStore token);
-    TableStore getTable(TokenStore token, String option);
+    TableStore getTable(TokenStore token);
 
     InputStream getNewCodeImg(TokenStore token);
 }

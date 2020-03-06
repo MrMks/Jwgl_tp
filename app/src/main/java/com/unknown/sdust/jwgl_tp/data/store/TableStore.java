@@ -16,20 +16,9 @@ public class TableStore implements IFileStore<TableStore>,ISelfCheck {
 
     @Expose private ArrayList<String[]> lessons;
     @Expose private String ext;
-    private String option;
     private HashMap<Integer,ArrayList<LessonDetail>> list = new HashMap<>(30);
 
-    public TableStore(String option){
-        this.option = option;
-    }
-
-    public String getOption(){
-        return option;
-    }
-
-    public void setOption(String option) {
-        this.option = option;
-    }
+    public TableStore(){}
 
     //details[name,teacher,room,weeks,day&time]
     public void addClass(String[] details){

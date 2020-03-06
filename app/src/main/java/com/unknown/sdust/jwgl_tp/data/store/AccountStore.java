@@ -17,8 +17,6 @@ public class AccountStore implements IFileStore<AccountStore>, ISelfCheck {
 
     private boolean fromLocal = true;
 
-    public AccountStore(){}
-
     public AccountStore(String acc, String pas, boolean rem){
         account = acc;
         password = pas;

@@ -2,6 +2,7 @@ package com.unknown.sdust.jwgl_tp.fragment.main;
 
 import android.app.AlertDialog;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -94,8 +95,14 @@ public class TableInfoFragment extends Fragment {
 
     private void createView(){
         if (calendar == null) return;
-        createView(calendar.getWeekIndex());
-        week_now = calendar.getWeekIndex();
+        int t_week = calendar.getWeekIndex();
+        if (t_week > 0 && t_week <= table.getWeekSize()) createView(t_week);
+        else Objects.requireNonNull(getActivity()).runOnUiThread(()->{
+            titleText.setText(String.format(Locale.ENGLISH,"%d / %d", t_week, table.getWeekSize()));
+            titleText.setTextColor(Color.RED);
+        });
+        week_now = t_week;
+
     }
 
     private void createView(int week){

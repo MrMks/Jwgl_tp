@@ -12,9 +12,9 @@ import androidx.fragment.app.Fragment;
 
 import com.unknown.sdust.jwgl_tp.R;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 public class TimeInfoFragment extends Fragment {
     @Nullable
@@ -27,9 +27,6 @@ public class TimeInfoFragment extends Fragment {
     }
 
     private String getTime(){
-        String str = new SimpleDateFormat("yyyy-MM-dd 星期u", Locale.CHINA).format(new Date());
-        String[] days = new String[]{"一","二","三","四","五","六","日"};
-        str = str.substring(0,str.length() - 1) + days[Integer.parseInt(str.substring(str.length() - 1)) - 1];
-        return str;
+        return SimpleDateFormat.getDateInstance(DateFormat.FULL).format(new Date());
     }
 }

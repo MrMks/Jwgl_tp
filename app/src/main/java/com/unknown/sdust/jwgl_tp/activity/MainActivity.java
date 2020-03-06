@@ -199,7 +199,6 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction().replace(R.id.a_main_content,new RequireLoginFragment(),F_TAG_REQUIRE_LOGIN).commit();
                 }
             } else {
-                //f_manager.popBackStack();
                 createMainActivity();
             }
         });

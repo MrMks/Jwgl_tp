@@ -15,20 +15,10 @@ public class CalendarStore implements IFileStore<CalendarStore>, ISelfCheck {
     private ArrayList<Integer> list;
     private Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+8"));
 
-    public CalendarStore(){}
-
     public CalendarStore(int y, int m, int d){
         year = y;
         month = m;
         day = d;
-    }
-
-    public int getWeekIndex(int year, int month, int day){
-        if (list == null) initList();
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT+8"));
-        c.set(year, month - 1, day);
-        c.add(Calendar.DATE,2 - c.get(Calendar.DAY_OF_WEEK));
-        return list.indexOf(c.get(Calendar.YEAR) * 1000 + c.get(Calendar.MONTH) * 100 + c.get(Calendar.DAY_OF_MONTH)) + 1;
     }
 
     public int getWeekIndex(){

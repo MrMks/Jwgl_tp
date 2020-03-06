@@ -67,24 +67,9 @@ public class DataManager {
      * this method depends on an accessible token
      */
     private TableStore table;
-    public TableStore getTable(){
-        return getTable(null);
-    }
-
-    //TODO add menu to support option;
-    @SuppressWarnings("WeakerAccess")
-    public TableStore getTable(String option) {
-        boolean flag = option == null || option.isEmpty();
-        if (flag) {
-            if (table != null && table.selfCheck()) return table;
-            else return null;
-        } else {
-            if (testToken()) {
-                TableStore tb = qz.getTable(token,option);
-                if (tb != null && tb.selfCheck()) return tb;
-                else return null;
-            } else return null;
-        }
+    public TableStore getTable() {
+        if (table != null && table.selfCheck()) return table;
+        else return null;
     }
 
     /**
@@ -159,7 +144,7 @@ public class DataManager {
     public void loadNew() {
         if (account == null) account = qz.getAccount(token); else account.setName(qz.getAccountName(token));
         calendar = qz.getCalendar(token);
-        table = qz.getTable(token,null);
+        table = qz.getTable(token);
         try {local.saveAccount(account);} catch (IOException e) {Log.w(TAG,e);}
         try {local.saveCalendar(calendar);} catch (IOException e) {Log.w(TAG,e);}
         try {local.saveTable(table);} catch (IOException e) {Log.w(TAG,e);}
@@ -184,9 +169,4 @@ public class DataManager {
         }
     }
 
-    public void deleteLocals(){
-        local.deleteTable();
-        local.deleteAccount();
-        local.deleteCalendar();
-    }
 }
