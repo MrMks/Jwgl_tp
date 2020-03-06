@@ -45,6 +45,7 @@ public class CalendarStore implements IFileStore<CalendarStore>, ISelfCheck {
 
     @Override
     public boolean selfCheck() {
+        if (calendar == null) calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+8"));
         return year != null && month != null && day != null
                 && year > calendar.get(Calendar.YEAR) - 1 && month >= 0 && month < 12
                 && day > 0 && day <= 31;
