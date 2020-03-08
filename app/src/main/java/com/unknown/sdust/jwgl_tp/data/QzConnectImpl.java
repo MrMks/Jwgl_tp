@@ -11,7 +11,7 @@ import com.unknown.sdust.jwgl_tp.utils.NetLib;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.TextNode;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -113,7 +113,7 @@ public class QzConnectImpl implements QzConnect {
             if (response.statusCode() == 200){
                 String str = response.parse().getElementById("Top1_divLoginName").text();
                 String[] strings = str.split("\\(");
-                AccountStore store = new AccountStore(strings[1].replace("\\)",""),"",false);
+                AccountStore store = new AccountStore(strings[1].replace(")",""),"",false);
                 store.setName(strings[0]);
                 return store;
             } else {
@@ -173,15 +173,31 @@ public class QzConnectImpl implements QzConnect {
                     int day = 1;
                     for (Element td : tds){
                         Element kbcontent = td.getElementsByClass("kbcontent").first();
-                        List<TextNode> texts = kbcontent.textNodes();
-                        Elements fonts = kbcontent.getElementsByTag("font");
+                        List<Node> nodes = kbcontent.childNodes();
 
-                        for(int c_index = 0;c_index < fonts.size() / 3;c_index ++){
-                            String name = texts.get(c_index * 2).text() + texts.get(c_index * 2 + 1).text();
-                            String teacher = fonts.remove(0).text();
-                            String strWeek = fonts.remove(0).text();
-                            String room = fonts.remove(0).text();
+                        int index = 0;
+                        for(int c_index = 0;c_index < (kbcontent.textNodes().size() + 1) / 3;c_index ++){
+                            String name = nodes.get((index++) * 2).toString().trim() + nodes.get((index++) * 2).toString();
+                            String teacher = "";
+                            String strWeek = "";
+                            String room = "";
 
+                            int i = 0;
+                            for (; (i + index) * 2 < nodes.size() && !nodes.get((i+index) * 2).toString().startsWith("--");i ++){
+                                Element e = (Element) kbcontent.childNode((i + index) * 2);
+                                switch (e.attr("title")){
+                                    case "老师":
+                                        teacher = e.text();
+                                        break;
+                                    case "周次(节次)":
+                                        strWeek = e.text();
+                                        break;
+                                    case "教室":
+                                        room = e.text();
+                                        break;
+                                }
+                            }
+                            index = index + i + 1;
                             store.addClass(new String[]{name,teacher,room,strWeek,""+day+" "+time});
                         }
                         day++;

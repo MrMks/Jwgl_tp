@@ -38,7 +38,6 @@ import butterknife.ButterKnife;
 
 import static com.unknown.sdust.jwgl_tp.Constant.KEY_ACCOUNT;
 import static com.unknown.sdust.jwgl_tp.Constant.KEY_PASSWORD;
-import static com.unknown.sdust.jwgl_tp.Constant.KEY_REMEMBER_ACCOUNT;
 import static com.unknown.sdust.jwgl_tp.Constant.KEY_REMEMBER_PASSWORD;
 import static com.unknown.sdust.jwgl_tp.Constant.TAG;
 
@@ -87,11 +86,9 @@ public class LoginFragment extends Fragment {
         if (activity == null) return;
 
         Intent intent = activity.getIntent();
-        if (intent.getBooleanExtra(KEY_REMEMBER_ACCOUNT,false)){
-            v_account.setText(intent.getStringExtra(KEY_ACCOUNT));
-            v_password.setText(intent.getStringExtra(KEY_PASSWORD));
-            checkBox.setChecked(intent.getBooleanExtra(KEY_REMEMBER_PASSWORD,false));
-        }
+        v_account.setText(intent.getStringExtra(KEY_ACCOUNT));
+        v_password.setText(intent.getStringExtra(KEY_PASSWORD));
+        checkBox.setChecked(intent.getBooleanExtra(KEY_REMEMBER_PASSWORD,false));
     }
 
     @Override

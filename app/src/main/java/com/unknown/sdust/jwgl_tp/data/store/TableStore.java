@@ -52,10 +52,9 @@ public class TableStore implements IFileStore<TableStore>,ISelfCheck {
             if (matcher.group(2) != null){
                 int i_a = 2;
                 int i_max = Integer.decode(Objects.requireNonNull(matcher.group(2)));
-                if (l[3].contains("单周") && i % 2 == 0) i += 1;
-                else if (l[3].contains("双周") && i % 2 == 1) i += 1;
+                if (l[3].contains("单周")) i += (1 - i % 2);
+                else if (l[3].contains("双周")) i += i % 2;
                 else i_a = 1;
-
                 for(;i<=i_max;i+=i_a) {
                     if (list.get(i) == null) {
                         list.put(i,new ArrayList<>(30));

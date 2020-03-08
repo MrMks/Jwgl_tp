@@ -13,7 +13,6 @@ public class CalendarStore implements IFileStore<CalendarStore>, ISelfCheck {
     //the date of the first day of this term
     @Expose private Integer year,month,day;
     private ArrayList<Integer> list;
-    private Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+8"));
 
     public CalendarStore(int y, int m, int d){
         year = y;
@@ -24,7 +23,9 @@ public class CalendarStore implements IFileStore<CalendarStore>, ISelfCheck {
     public int getWeekIndex(){
         if (list == null) initList();
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT+8"));
-        c.add(Calendar.DATE,2 - c.get(Calendar.DAY_OF_WEEK));
+        int i = c.get(Calendar.DAY_OF_WEEK);
+        if (i == Calendar.SUNDAY) i += 7;
+        c.add(Calendar.DATE,2 - i);
         return list.indexOf(c.get(Calendar.YEAR) * 1000 + c.get(Calendar.MONTH) * 100 + c.get(Calendar.DAY_OF_MONTH)) + 1;
     }
 
@@ -45,7 +46,7 @@ public class CalendarStore implements IFileStore<CalendarStore>, ISelfCheck {
 
     @Override
     public boolean selfCheck() {
-        if (calendar == null) calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+8"));
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+8"));
         return year != null && month != null && day != null
                 && year > calendar.get(Calendar.YEAR) - 1 && month >= 0 && month < 12
                 && day > 0 && day <= 31;
