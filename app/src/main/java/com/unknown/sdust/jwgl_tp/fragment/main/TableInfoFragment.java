@@ -123,7 +123,11 @@ public class TableInfoFragment extends Fragment {
 
 
                 TextView item = (TextView) row.getChildAt(d.getDaytime() / 10 - 1);
-                item.setText(d.getName());
+                String name = d.getName();
+                if (name.length() > 14){
+                    name = name.substring(0,7) + "…  " + name.substring(name.length() - 6);
+                }
+                item.setText(name);
                 item.append("\n" + d.getRoom());
                 item.setOnClickListener(v-> new AlertDialog.Builder(getContext())
                         .setTitle(d.getName())
